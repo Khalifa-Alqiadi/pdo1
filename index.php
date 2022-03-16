@@ -4,8 +4,13 @@
     $database = new Database();
     $do = isset($_GET['do']) ? $do = $_GET['do'] : 'Manage';
 
+
     if($do == 'Manage'){
-        $rows = $database->getAllTable("*", "items", "", '', "ItemID", ""); ?>
+        $query = $database->select('*', 'items')->where('ItemID', '=', 4);
+
+            // $user = $pdoStatement->fetchAll(\PDO::FETCH_ASSOC);
+        // $where = $database->where("ItemID", "=", "6");
+        // $rows = $database->getAllTable("*", "items", $where, '', "ItemID", ""); ?>
         <h1 class="text-center">All Items</h1>
         <div class="container">
             <div class="table-responsive">
@@ -20,7 +25,7 @@
                     </tr>
                     <?php
 
-                        foreach($rows as $row){
+                        foreach($query as $row){
 
                             echo "<tr>" .
                                     "<td>" . $row['ItemID'] . 
@@ -201,7 +206,7 @@
                         <div class="mb-2 row">
                             <label class="col-sm-2 col-form-label">Name</label>
                             <div class="col-sm-10 col-md-9">
-                                <input type="text" name="name" value="<?php echo $row['Name']; ?>" class="form-control" autocomplete="off" required="required">
+                                <input type="text" name="name" value="<?php echo $row['Name']; ?>" class="form-control" autocomplete="off">
                             </div>
                         </div>
                         <!-- End Name -->
@@ -209,7 +214,7 @@
                         <div class="mb-2 row">
                             <label class="col-sm-2 col-form-label">Description</label>
                             <div class="col-sm-10 col-md-9">
-                                <input type="text" name="descrip" value="<?php echo $row['Description']; ?>" class="form-control" required="required">
+                                <input type="text" name="descrip" value="<?php echo $row['Description']; ?>" class="form-control">
                             </div>
                         </div>
                         <!-- End Description -->
@@ -251,7 +256,7 @@
                         <div class="mb-2 row">
                             <label class="col-sm-2 col-form-label">Image</label>
                             <div class="col-sm-10 col-md-9">
-                                <input type="file" name="image" class="form-control" required="required">
+                                <input type="file" name="image" class="form-control">
                             </div>
                         </div>
                         <!-- End Image Field -->
@@ -320,7 +325,7 @@
                 $stmt->execute(array($name, $descrip, $price, $quentity, $image, $category, $id));
 
                 $TheMsg = "<div class='alert alert-success'>" . $stmt->rowCount() . ' Record Update</div>';
-                $database->redirectHome($TheMsg, 'back');
+                $database->redirectHome($TheMsg, 'back', 10);
             }
         }else{
             $TheMsg = "<div class='alert alert-danger'>Sorry You Cant Browse This Page Directly</div>";

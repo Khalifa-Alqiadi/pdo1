@@ -26,6 +26,43 @@ class database{
         }
         
     }
+    private $fields;
+    // private $conditions = [];
+    private $from = [];
+    public function select($column, $table)
+    {
+        // $column_name = implode(',', $column);
+        $query = "SELECT $column  FROM $table";
+        $this->fields = $query;
+        $stmt = $this->con->prepare($query);
+        // $stmt->execute();
+        // $stmt->fetchAll();
+        return $this;
+    }
+    public function where($conditions = NULL, $field = NULL, $data=NULL)
+    {
+        // $where_con ="";
+        // if($conditions){
+            $query = "WHERE $conditions $field $data";
+            $this->fields = $query; 
+        // }else{
+            // $query = $this->fields;
+        // }
+        $stmt = $this->con->prepare($query);
+        $stmt->execute();
+        
+        return $stmt->fetchAll();
+    }
+
+    public function from(string $table, ?string $alias = null): self
+    {
+        if ($alias === null) {
+            $this->from[] = $table;
+        } else {
+            $this->from[] = "${table} AS ${alias}";
+        }
+        return $this;
+    }
 
     public function getAllTable($field, $allTable, $where = NULL, $and = NULL, $orderField, $ordering = 'DESC', $limit = NULL){
 
@@ -38,6 +75,10 @@ class database{
         return $all;
 
     }
+    // public function where($name, $equal, $data){
+    //     $where = "WHERE $name $equal $data";
+    //     return $where;
+    // }
     public function insertData($table, $values){
         $insert = $this->con->prepare("INSERT INTO $table $values");
         return $insert;
@@ -54,9 +95,7 @@ class database{
     }
     public function deleteRecord($from, $delete, $value){
 
-        $statment = $this->con->prepare("DELETE FROM $from WHERE $delete = :zid");
-
-        $statment->bindParam(":zid", $value);
+        $statment = $this->con->prepare("DELETE FROM $from WHERE $delete = $value");
 
         $statment->execute();
 
