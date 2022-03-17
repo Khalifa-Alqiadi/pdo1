@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: 13 مارس 2022 الساعة 19:33
+-- Generation Time: 17 مارس 2022 الساعة 20:43
 -- إصدار الخادم: 10.4.18-MariaDB
 -- PHP Version: 8.0.3
 
@@ -53,7 +53,7 @@ CREATE TABLE `items` (
   `Name` varchar(255) NOT NULL,
   `Description` varchar(255) NOT NULL,
   `Price` varchar(255) NOT NULL,
-  `Date` date NOT NULL,
+  `Date` varchar(255) NOT NULL,
   `quentity` varchar(255) NOT NULL,
   `image` varchar(255) NOT NULL,
   `Status` int(11) NOT NULL DEFAULT 0,
@@ -65,10 +65,8 @@ CREATE TABLE `items` (
 --
 
 INSERT INTO `items` (`ItemID`, `Name`, `Description`, `Price`, `Date`, `quentity`, `image`, `Status`, `cat_id`) VALUES
-(3, 'Phone Not 10 ', 'This Game Is Very Good And Vary Nice', '300', '2022-03-10', '12', '14098_4.png', 0, 7),
-(4, 'Luxury Hotels', 'This Mobile Is Galaxy', '20000', '2022-03-12', '12', '93141_6.jpg', 0, 7),
-(5, 'Phone Not 9', 'this is very goods', '9000', '2022-03-13', '12', '54865_7.jpg', 0, 6),
-(6, 'khalifa alqiadi', 'this is very goods', '9000', '2022-03-13', '12', '28072_5.png', 0, 6);
+(15, 'games', 'this is very goods', '9000', '03-17-2022', '12', '63261_4.png', 0, 6),
+(16, 'khalifa alqiadi', 'this is very goods', '9000', '03-17-2022', '12', '87836_6.jpg', 0, 6);
 
 -- --------------------------------------------------------
 
@@ -195,7 +193,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `items`
 --
 ALTER TABLE `items`
-  MODIFY `ItemID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `ItemID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `users`

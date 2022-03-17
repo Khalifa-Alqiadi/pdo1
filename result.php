@@ -1,13 +1,13 @@
 <?php
 include "header.php";
-include "database.php";
-$database = new Database();
+include "db.php";
+$database = DB::getInstance();
 echo "<div='container p-10'>";
 $table = $_POST['table'];
 $name = $_POST['name'];
 $data = $_POST['data'];
 echo $data;
-$rows = $database->getAllTable($name, $table, "", '', "ItemID", "");
+$rows = $database->table($table)->select($name)->get();
 
 foreach($rows as $row){
     echo "<div= class='card'>";

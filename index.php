@@ -1,12 +1,15 @@
 <?php
     include "header.php";
-    include "database.php";
-    $database = new Database();
+    include "db.php";
+    // $database = new Database();
+    $db = DB::getInstance();
     $do = isset($_GET['do']) ? $do = $_GET['do'] : 'Manage';
 
 
     if($do == 'Manage'){
-        $query = $database->select('*', 'items')->where('ItemID', '=', 4);
+        // echo $db->getSQL();
+        
+        $query = $db->table('items')->orderBy("ItemID", "DESC")->limit(1)->get();
 
             // $user = $pdoStatement->fetchAll(\PDO::FETCH_ASSOC);
         // $where = $database->where("ItemID", "=", "6");
@@ -94,7 +97,7 @@
                             <select name="category">
                                 <option value="0">...</option>
                                 <?php
-                                    $allCats = $database->getAllTable("*", "categories", "", '', "ID", "");
+                                    $allCats = $db->table("categories")->get();
                                     foreach($allCats as $cat){
                                         echo "<option value='" . $cat['ID'] . "'>" . $cat['Name'] . "</option>";
                                     }
@@ -174,19 +177,19 @@
 
                 $image = rand(0, 100000) . '_' . $imageName;
                 move_uploaded_file($imageTmp, "upload\images\\" . $image);
-                $table = "items(Name, Description, Price, Date, quentity, image, Status, cat_id)";
-                $values = "VALUES(:zname, :zdescr, :zprice, now(), :zquentity, :zimage, 0, :zcat)";
-                $stmt = $database->insertData($table, $values);
-                $stmt->execute(array(
-                    'zname'         => $name,
-                    'zdescr'        => $descrip,
-                    'zprice'        => $price,
-                    'zquentity'     => $quentity,
-                    'zimage'        => $image,
-                    'zcat'          => $category
-                ));
-                $TheMsg = "<div class='alert alert-success'>" . $stmt->rowCount() . ' Record Inserted</div>';
-                $database->redirectHome($TheMsg, 'back', 5);
+
+                $lestId = $db->insert('items', [
+                    'Name'         => $name,
+                    'Description'        => $descrip,
+                    'Price'        => $price,
+                    'Date'        => date("m-d-Y"),
+                    'quentity'     => $quentity,
+                    'image'        => $image,
+                    'Status'        => 0,
+                    'cat_id'          => $category
+                ]);
+                $TheMsg = "<div class='alert alert-success'> Record Inserted</div>";
+                $db->redirectHome($TheMsg, 'back', 5);
             }
             echo "</div>";
         }else{
@@ -196,7 +199,8 @@
     }elseif($do == 'Edit'){ 
         
         $itemid = isset($_GET['itemid']) && is_numeric($_GET['itemid']) ? intval($_GET['itemid']) : 0;
-        $row = $database->selectByID("items", $itemid); ?>
+        $rows = $db->table("items")->where('ItemID', $itemid)->get(); 
+        foreach($rows as $row){?>
             <h1 class="text-center">Edit Item</h1>
             <div class="container">
                 <div class="form-container">
@@ -241,7 +245,7 @@
                                 <select name="category" class="form-control">
                                     <option value="0">...</option>
                                     <?php
-                                        $cats = $database->getAllTable("*", "categories", "", "", "ID", "ASC", "");
+                                        $cats = $db->table("categories")->get();
                                         foreach($cats as $cat){
                                             echo '<option value="' . $cat['ID'] . '"';
                                             if($row['cat_id'] == $cat['ID']){echo 'selected';}
@@ -270,7 +274,7 @@
                     </form>
                 </div>
             </div>    
-<?php }elseif($do == 'Update'){
+<?php }}elseif($do == 'Update'){
         echo "<h1 class='text-center'>Update Item</h1>";
         if($_SERVER['REQUEST_METHOD'] == 'POST'){
 
@@ -321,11 +325,18 @@
 
                 $image = rand(0, 100000) . '_' . $imageName;
                 move_uploaded_file($imageTmp, "upload\images\\" . $image);
-                $stmt = $database->updateData("items", "Name = ?, Description = ?, Price = ?, quentity = ?, image = ?, cat_id = ?", "ItemID = ?");
-                $stmt->execute(array($name, $descrip, $price, $quentity, $image, $category, $id));
+                $stmt = $db->update("items",
+                 [
+                    "Name" => $name,
+                    "Description" => $descrip, 
+                    "Price" => $price, 
+                    "quentity" => $quentity, 
+                    "image" => $image, 
+                    "cat_id" => $category
+                  ])->where($id)->exec();
 
-                $TheMsg = "<div class='alert alert-success'>" . $stmt->rowCount() . ' Record Update</div>';
-                $database->redirectHome($TheMsg, 'back', 10);
+                $TheMsg = "<div class='alert alert-success'>Record Update</div>";
+                $db->redirectHome($TheMsg, 'back', 10);
             }
         }else{
             $TheMsg = "<div class='alert alert-danger'>Sorry You Cant Browse This Page Directly</div>";
@@ -335,12 +346,12 @@
         echo "<h1 class='text-center'>Delete Item</h1>";
                 
         $itemid = isset($_GET['itemid']) && is_numeric($_GET['itemid']) ? intval($_GET['itemid']) : 0;
-        $database->deleteRecord("items", "ItemID", $itemid);
+        $db->delete("items")->where($itemid)->exec();
 
         $TheMsg = "<div class='alert alert-success'> Record Deleted</div>";
-        $database->redirectHome($TheMsg, 'back', 5);
+        $db->redirectHome($TheMsg, 'back', 5);
     }else{
         $TheMsg = '<div class="alert alert-danger">This ID Is Not Exist</div>';
-        $database->redirectHome($TheMsg);
+        $db->redirectHome($TheMsg);
     }
 ?>
