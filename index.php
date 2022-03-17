@@ -9,7 +9,11 @@
     if($do == 'Manage'){
         // echo $db->getSQL();
         
-        $query = $db->table('items')->orderBy("ItemID", "DESC")->limit(1)->get();
+        $query = $db->table('items')->select("categories.ID", "items.*")
+        ->join("categories", "categories.ID", "items.cat_id")
+        ->get();
+
+        print_r($query);
 
             // $user = $pdoStatement->fetchAll(\PDO::FETCH_ASSOC);
         // $where = $database->where("ItemID", "=", "6");
@@ -31,7 +35,7 @@
                         foreach($query as $row){
 
                             echo "<tr>" .
-                                    "<td>" . $row['ItemID'] . 
+                                    "<td>" . $row['ID'] . 
                                     "</td><td class='avatar-img'>";
                                     echo "<img src='upload/images/" . $row['image'] ."' alt=''>";
                                     echo "</td><td>" . $row['Name'] . 

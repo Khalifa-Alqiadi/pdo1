@@ -2,7 +2,7 @@
 class DB{
 	private static $instance = null;
 	private $dbh = null, 
-			$table, $columns, $sql, $bindValues,
+			$table, $columns = [], $sql, $bindValues, $join,
 			$where, $orWhere, $whereCount=0, $isOrWhere = false,
 			$rowCount=0, $limit, $orderBy, $lastIDInserted = 0;
 
@@ -45,6 +45,7 @@ class DB{
 		$this->columns = null;
 		$this->sql = null;
 		$this->bindValues = null;
+		$this->join = null;
 		$this->limit = null;
 		$this->orderBy = null;
 		$this->where = null;
@@ -242,15 +243,28 @@ class DB{
 	public function select($columns){
 		$columns = explode(',', $columns);
 		foreach ($columns as $key => $column) {
-			$columns[$key] = trim($column);
+			$columns[$key] = $column;
 		}
 		
 		$columns = implode('`, `', $columns);
-		
-
-		$this->columns = "`{$columns}`";
+		$this->columns = `[$columns]`;
 		return $this;
 	}
+	// public function select(string ...$column_name)
+    // {
+    //     $this->columns = $column_name;
+    //     return $this;
+    // }
+	// public function join($join, $on){
+		
+	// 	$this->join = "items.*, categories.ID AS name FORM $this->table JOIN $join ON $on";
+	// 	return $this;
+	// }
+	public function join(string $table_name, $FK, $PK):DB
+    {
+        $this->join = " JOIN  $table_name  ON  $FK  =  $PK";
+        return $this;
+    }
 
 	public function where(){
 		if ($this->whereCount == 0) {
@@ -362,6 +376,9 @@ class DB{
 
 		if ($this->where !== null) {
 			$this->sql .= $this->where;
+		}
+		if ($this->join !== null) {
+			$this->sql .= $this->join;
 		}
 
 		if ($this->orderBy !== null) {
